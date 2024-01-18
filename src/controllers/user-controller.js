@@ -18,6 +18,22 @@ async function signup(req, res) {
   }
 }
 
+async function signin(req, res) {
+  try {
+    const data = {
+      email: req.body.email,
+      password: req.body.password,
+    };
+    const jwtToken = await UserService.signin(data);
+    SuccessResponse.data = { jwtToken: jwtToken };
+    return res.status(StatusCodes.CREATED).json(SuccessResponse);
+  } catch (error) {
+    ErrorResponse.error = error;
+    return res.status(error.statusCode).json(ErrorResponse);
+  }
+}
+
 module.exports = {
   signup,
+  signin,
 };

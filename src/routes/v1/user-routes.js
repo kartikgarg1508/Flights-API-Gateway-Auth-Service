@@ -12,10 +12,17 @@ req-body {
 
 */
 
-router.post(
-  "/signup",
-  UserMiddleware.ValidateCreateUser,
-  UserController.signup
-);
+router.post("/signup", UserMiddleware.ValidateUser, UserController.signup);
+
+/* POST /api/v1/user/signin
+
+req-body {
+    email: abc@gmail.com
+    password: Abc@12345
+}
+
+*/
+
+router.post("/signin", UserMiddleware.ValidateUser, UserController.signin);
 
 module.exports = router;

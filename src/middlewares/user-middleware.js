@@ -2,7 +2,7 @@ const { AppError } = require("../utils/errors");
 const { ErrorResponse } = require("../utils/common");
 const { StatusCodes } = require("http-status-codes");
 
-async function ValidateCreateUser(req, res, next) {
+async function ValidateUser(req, res, next) {
   if (req.body.email && req.body.password) {
     next();
   } else {
@@ -22,5 +22,5 @@ async function ValidateCreateUser(req, res, next) {
   }
 }
 module.exports = {
-  ValidateCreateUser,
+  ValidateUser,
 };
