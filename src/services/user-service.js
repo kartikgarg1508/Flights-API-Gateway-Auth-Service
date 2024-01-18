@@ -58,7 +58,31 @@ async function signin(data) {
   }
 }
 
+async function isAuthenticated(token) {
+  try {
+    const response = Auth.verifyToken(token);
+    // this is done to check if user is deleted
+    const user = await userrepository.get(response.id);
+    return user.id;
+  } catch (error) {
+    if (error.statusCode === StatusCodes.NOT_FOUND)
+      throw new AppError("User not found", error.statusCode);
+
+    if (error.name === "JsonWebTokenError")
+      throw new AppError("Invalid JWT Token", StatusCodes.BAD_REQUEST);
+
+    if (error.name === "TokenExpiredError")
+      throw new AppError("Token has expired", StatusCodes.BAD_REQUEST);
+
+    throw new AppError(
+      "Not able to authenticate",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
 module.exports = {
   createUser,
   signin,
+  isAuthenticated,
 };

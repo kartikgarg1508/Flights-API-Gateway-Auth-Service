@@ -22,7 +22,16 @@ function createJwtToken(data) {
   }
 }
 
+function verifyToken(token) {
+  try {
+    return jwt.verify(token, ServerConfig.SECRET_KEY);
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   checkPassword,
   createJwtToken,
+  verifyToken,
 };
