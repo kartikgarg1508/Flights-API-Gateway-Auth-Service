@@ -14,7 +14,28 @@ async function isAuthenticated(req, res, next) {
   }
 
   try {
-    await UserService.isAuthenticated(req.headers["x-access-token"]);
+    const response = await UserService.isAuthenticated(
+      req.headers["x-access-token"]
+    );
+    if (response) {
+      req.userId = response;
+      next();
+    }
+  } catch (error) {
+    ErrorResponse.error = error;
+    return res.status(error.statusCode).json(ErrorResponse);
+  }
+}
+
+async function isAdmin(req, res, next) {
+  try {
+    const response = await UserService.isAdmin(req.userId);
+    if (!response) {
+      throw new AppError(
+        "Not Permitted to do the requested action as you are not an Admin",
+        StatusCodes.UNAUTHORIZED
+      );
+    }
     next();
   } catch (error) {
     ErrorResponse.error = error;
@@ -24,4 +45,5 @@ async function isAuthenticated(req, res, next) {
 
 module.exports = {
   isAuthenticated,
+  isAdmin,
 };

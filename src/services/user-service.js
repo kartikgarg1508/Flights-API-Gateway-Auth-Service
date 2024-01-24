@@ -1,11 +1,11 @@
 const { UserRepository, RoleRepository } = require("../repositories");
 const { AppError } = require("../utils/errors");
 const { StatusCodes } = require("http-status-codes");
-const { Auth,Enums } = require("../utils/common");
+const { Auth, Enums } = require("../utils/common");
 
 const userrepository = new UserRepository();
 const rolerepository = new RoleRepository();
-const { CUSTOMER } = Enums.USER_ROLES;
+const { CUSTOMER, ADMIN } = Enums.USER_ROLES;
 
 async function createUser(data) {
   try {
@@ -86,8 +86,57 @@ async function isAuthenticated(token) {
   }
 }
 
+async function addUserRole(data) {
+  try {
+    const user = await userrepository.findUser(data.email);
+    const role = await rolerepository.getRole(data.rolename);
+    if (!role)
+      throw new AppError("Role does not exists", StatusCodes.BAD_REQUEST);
+    user.addRole(role);
+    return user;
+  } catch (error) {
+    if (error.statusCode === StatusCodes.NOT_FOUND)
+      throw new AppError(
+        "No registered user exists with the given email",
+        error.statusCode
+      );
+
+    if (error.statusCode === StatusCodes.BAD_REQUEST)
+      throw new AppError(
+        "There is no role with the provided role name",
+        error.statusCode
+      );
+
+    throw new AppError(
+      "Not able to assign Role to User",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
+async function isAdmin(userId) {
+  try {
+    const user = await userrepository.get(userId);
+    const adminrole = await rolerepository.getRole(ADMIN);
+    return user.hasRole(adminrole);
+  } catch (error) {
+    if (error.statusCode === StatusCodes.NOT_FOUND)
+      throw new AppError(
+        "No registered user exists with the given email",
+        error.statusCode
+      );
+
+    throw new AppError(
+      "Something went wrong",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
 module.exports = {
   createUser,
   signin,
   isAuthenticated,
+  addUserRole,
+  isAdmin,
 };

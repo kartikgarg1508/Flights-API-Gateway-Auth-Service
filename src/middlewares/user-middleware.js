@@ -21,6 +21,28 @@ async function ValidateUser(req, res, next) {
     return res.status(ErrorResponse.error.statusCode).json(ErrorResponse);
   }
 }
+async function ValidateAddRole(req, res, next) {
+  if (req.body.email && req.body.rolename) {
+    next();
+  } else {
+    ErrorResponse.message =
+      "Something went wrong while assigning role to the user";
+    let explanation = [];
+
+    if (!req.body.email) {
+      explanation.push("Email not found in the incoming request");
+    }
+
+    if (!req.body.rolename) {
+      explanation.push("role name not found in the incoming request");
+    }
+
+    ErrorResponse.error = new AppError(explanation, StatusCodes.BAD_REQUEST);
+    return res.status(ErrorResponse.error.statusCode).json(ErrorResponse);
+  }
+}
+
 module.exports = {
   ValidateUser,
+  ValidateAddRole,
 };
