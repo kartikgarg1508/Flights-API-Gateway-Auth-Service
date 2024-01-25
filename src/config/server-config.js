@@ -9,4 +9,5 @@ module.exports = {
   JWT_EXPIRY: process.env.JWT_EXPIRY,
   BOOKING_SERVICE: process.env.BOOKING_SERVICE,
   SEARCH_SERVICE: process.env.SEARCH_SERVICE,
+  FLIGHT_CREATION_ROUTE: process.env.FLIGHT_CREATION_ROUTE,
 };

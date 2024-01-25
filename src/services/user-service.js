@@ -5,7 +5,7 @@ const { Auth, Enums } = require("../utils/common");
 
 const userrepository = new UserRepository();
 const rolerepository = new RoleRepository();
-const { CUSTOMER, ADMIN } = Enums.USER_ROLES;
+const { CUSTOMER } = Enums.USER_ROLES;
 
 async function createUser(data) {
   try {
@@ -114,11 +114,11 @@ async function addUserRole(data) {
   }
 }
 
-async function isAdmin(userId) {
+async function checkUserHasRole(userId, rolename) {
   try {
     const user = await userrepository.get(userId);
-    const adminrole = await rolerepository.getRole(ADMIN);
-    return user.hasRole(adminrole);
+    const role = await rolerepository.getRole(rolename);
+    return user.hasRole(role);
   } catch (error) {
     if (error.statusCode === StatusCodes.NOT_FOUND)
       throw new AppError(
@@ -138,5 +138,5 @@ module.exports = {
   signin,
   isAuthenticated,
   addUserRole,
-  isAdmin,
+  checkUserHasRole,
 };

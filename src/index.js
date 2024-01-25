@@ -3,6 +3,7 @@ const { ServerConfig, LoggerConfig } = require("./config");
 const apiRoutes = require("./routes");
 const { rateLimit } = require("express-rate-limit");
 const { createProxyMiddleware } = require("http-proxy-middleware");
+const { AuthMiddleware } = require("./middlewares");
 
 const app = express();
 const limiter = rateLimit({
@@ -10,31 +11,35 @@ const limiter = rateLimit({
   limit: 10,
 });
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(limiter);
 
 app.use(
   "/searchservice",
+  AuthMiddleware.isAuthenticated,
+  AuthMiddleware.checkFlightCreation,
   createProxyMiddleware({
     target: ServerConfig.SEARCH_SERVICE,
     changeOrigin: true,
     pathRewrite: {
-      "/searchservice": "/",
+      "/searchservice": " ",
     },
   })
 );
 
 app.use(
   "/bookingservice",
+  AuthMiddleware.isAuthenticated,
   createProxyMiddleware({
     target: ServerConfig.BOOKING_SERVICE,
     changeOrigin: true,
     pathRewrite: {
-      "/bookingservice": "/",
+      "/bookingservice": " ",
     },
   })
 );
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", apiRoutes);
 

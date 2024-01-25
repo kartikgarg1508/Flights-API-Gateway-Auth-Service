@@ -29,7 +29,7 @@ router.post("/signin", UserMiddleware.ValidateUser, UserController.signin);
 
 req-body {
     email: abc@gmail.com
-    password: Abc@12345
+    rolename: Admin/Flight-Company/Customer
 }
 
 */
